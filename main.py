@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import json
+from pathlib import Path
+
 
 app = FastAPI()
 
@@ -9,6 +12,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+DATA_FILE = Path("exercises.json")
+
 
 @app.get("/")
 def root():
