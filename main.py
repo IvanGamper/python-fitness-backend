@@ -12,4 +12,4 @@ app.add_middleware(
 
 @app.get("/")
 def root():
-    return {"status": "Python Fitness Backend läuft"}
+    return {"status": "Python Fitness Backend läufttttt"}
