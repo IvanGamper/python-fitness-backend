@@ -13,3 +13,9 @@ app.add_middleware(
 @app.get("/")
 def root():
     return {"status": "Python Fitness Backend läufttttt"}
+
+@app.get("/exercises")
+def get_exercises():
+    if not DATA_FILE.exists():
+        return []
+    return json.loads(DATA_FILE.read_text(encoding="utf-8"))
