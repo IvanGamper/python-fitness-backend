@@ -10,14 +10,11 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime, timedelta
 import uuid
 
-
-
-
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # später einschränken
+    allow_origins=["https://pythonfitness.de", "https://www.pythonfitness.de"],  # später einschränken
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -27,7 +24,6 @@ LEADS_FILE = Path("leads.json")
 PDF_PATH = Path("files/handstand.pdf")
 
 TOKEN_LIFETIME_HOURS = 24
-
 
 @app.get("/")
 def root():
@@ -42,7 +38,6 @@ def get_exercises():
 class Exercise(BaseModel):
     title: str
     category: str
-
 
 @app.post("/exercises")
 def add_exercise(exercise: Exercise):
