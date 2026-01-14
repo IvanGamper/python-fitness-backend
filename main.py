@@ -92,13 +92,19 @@ def signup(data: SignupRequest):
         encoding="utf-8"
     )
 
-    download_link = f"http://localhost:8000/download/{token}"
+    BASE_URL = "http://localhost:8000"  # DEV
+    # BASE_URL = "https://api.pythonfitness.de"  # PROD
+
+    download_link = f"{BASE_URL}/download/{token}"
+
+
 
     # DEV: später echte E-Mail
     print("DOWNLOAD-LINK:", download_link)
 
     return {
-        "message": "Danke! Prüfe deine E-Mails für den Download-Link."
+        "message": "Danke! Prüfe deine E-Mails für den Download-Link.",
+        "download_url": download_link
     }
 
 
