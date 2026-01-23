@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi import Depends, Header, HTTPException
+import uuid
 
 import json
 from pathlib import Path
@@ -9,6 +11,8 @@ print(Path)
 from pydantic import BaseModel, EmailStr
 from datetime import datetime, timedelta
 import uuid
+
+TOKENS = {}  # später DB
 
 app = FastAPI()
 
@@ -139,3 +143,9 @@ def download_pdf(token: str):
             )
 
     raise HTTPException(status_code=404, detail="Ungültiger Link")
+
+@app.post("/login")
+def login(email: str):
+    token = str(uuid.uuid4())
+    TOKENS[token] = email
+    return {"token": token}
