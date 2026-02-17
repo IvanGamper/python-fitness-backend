@@ -19,8 +19,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://pythonfitness.de",
-                   "https://www.pythonfitness.de"],  # später einschränken
+    allow_origins=["https://pythonfitness.de", "https://www.pythonfitness.de"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
