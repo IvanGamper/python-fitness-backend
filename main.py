@@ -1,24 +1,26 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-from fastapi import Depends, Header, HTTPException
-import uuid
+from fastapi import HTTPException
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+import os
+import smtplib
+from email.message import EmailMessage
 import json
 from pathlib import Path
-print(json)
-print(Path)
 from pydantic import BaseModel, EmailStr
 from datetime import datetime, timedelta
-import uuid
 
-TOKENS = {}  # später DB
+
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASS = os.getenv("EMAIL_PASS")
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://pythonfitness.de", "https://www.pythonfitness.de"],  # später einschränken
+    allow_origins=["https://pythonfitness.de",
+                   "https://www.pythonfitness.de"],  # später einschränken
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -27,21 +29,20 @@ DATA_FILE = Path("exercises.json")
 LEADS_FILE = Path("leads.json")
 PDF_PATH = Path("files/handstand.pdf")
 
-TOKEN_LIFETIME_HOURS = 24
 
 @app.get("/")
 def root():
     return {"status": "Python Fitness Backend läufttttt"}
+
+class Exercise(BaseModel):
+    title: str
+    category: str
 
 @app.get("/exercises")
 def get_exercises():
     if not DATA_FILE.exists():
         return []
     return json.loads(DATA_FILE.read_text(encoding="utf-8"))
-
-class Exercise(BaseModel):
-    title: str
-    category: str
 
 @app.post("/exercises")
 def add_exercise(exercise: Exercise):
@@ -70,25 +71,21 @@ def add_exercise(exercise: Exercise):
 
     return new_exercise
 
+
 class SignupRequest(BaseModel):
     email: EmailStr
 
-
 @app.post("/signup")
 def signup(data: SignupRequest):
+
     if LEADS_FILE.exists():
         leads = json.loads(LEADS_FILE.read_text(encoding="utf-8"))
     else:
         leads = []
 
-    token = str(uuid.uuid4())
-    expires_at = (datetime.utcnow() + timedelta(hours=TOKEN_LIFETIME_HOURS)).isoformat()
-
     leads.append({
         "email": data.email,
-        "token": token,
-        "used": False,
-        "expires": expires_at,
+        "created": datetime.utcnow().isoformat(),
     })
 
     LEADS_FILE.write_text(
@@ -96,56 +93,40 @@ def signup(data: SignupRequest):
         encoding="utf-8"
     )
 
-    BASE_URL = "http://localhost:8000"  # DEV
-    # BASE_URL = "https://api.pythonfitness.de"  # PROD
+    try:
+        send_pdf_via_email(data.email)
+    except Exception as e:
+        raise HTTPException(status_code=500,
+                            detail=str(e))
 
-    download_link = f"{BASE_URL}/download/{token}"
-
-
-
-    # DEV: später echte E-Mail
-    print("DOWNLOAD-LINK:", download_link)
 
     return {
-        "message": "Danke! Prüfe deine E-Mails für den Download-Link.",
-        "download_url": download_link
+        "message": "Danke für deine E-Mail.",
     }
 
+def send_pdf_via_email(to_email: str):
+
+    if not EMAIL_USER or not EMAIL_PASS:
+        raise RuntimeError("EMAIL_USER und EMAIL_PASS müssen gesetzt sein.")
+
+    msg = EmailMessage()
+    msg["Subject"] = "Dein PDF"
+    msg["From"] = EMAIL_USER
+    msg["To"] = to_email
+    msg.set_content("Hier ist dein PDF. Viel Spaß damit!")
+
+    with open(PDF_PATH, "rb") as f:
+        pdf_data = f.read()
+
+    msg.add_attachment(
+        pdf_data,
+        maintype="application",
+        subtype="pdf",
+        filename="handstand.pdf")
 
 
-@app.get("/download/{token}")
-def download_pdf(token: str):
-    if not LEADS_FILE.exists():
-        raise HTTPException(status_code=404, detail="Ungültiger Link")
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
 
-    leads = json.loads(LEADS_FILE.read_text(encoding="utf-8"))
+        smtp.login(EMAIL_USER, EMAIL_PASS)
 
-    for lead in leads:
-        if lead["token"] == token:
-
-            if lead["used"]:
-                raise HTTPException(status_code=410, detail="Link bereits benutzt")
-
-            if datetime.utcnow() > datetime.fromisoformat(lead["expires"]):
-                raise HTTPException(status_code=410, detail="Link abgelaufen")
-
-            lead["used"] = True
-
-            LEADS_FILE.write_text(
-                json.dumps(leads, indent=2, ensure_ascii=False),
-                encoding="utf-8"
-            )
-
-            return FileResponse(
-                path=PDF_PATH,
-                filename="Handstand_Trainingsplan.pdf",
-                media_type="application/pdf"
-            )
-
-    raise HTTPException(status_code=404, detail="Ungültiger Link")
-
-@app.post("/login")
-def login(email: str):
-    token = str(uuid.uuid4())
-    TOKENS[token] = email
-    return {"token": token}
+        smtp.send_message(msg)
