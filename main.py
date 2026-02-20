@@ -1,8 +1,9 @@
 from fastapi import HTTPException
-
+from fastapi.responses import FileResponse
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+import requests
 import os
 import smtplib
 from email.message import EmailMessage
