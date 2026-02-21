@@ -109,7 +109,7 @@ def send_pdf_via_email(to_email: str):
     with open(PDF_PATH, "rb") as f:
         pdf_bytes = f.read()
 
-    encoded_pdf = base64.b64encode(pdf_bytes).decode()
+    encoded_pdf = base64.b64encode(pdf_bytes).decode("utf-8")
 
     response = resend.Emails.send({
         "from": "onboarding@pythonfitness.de",
@@ -123,9 +123,8 @@ def send_pdf_via_email(to_email: str):
         """,
         "attachments": [
             {
-                "filename": "handstand_guide.pdf",
-                "content": encoded_pdf,
-                "type": "application/pdf"
+                "filename": "handstand.pdf",
+                "content": encoded_pdf
             }
         ]
     })
