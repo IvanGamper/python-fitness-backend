@@ -107,6 +107,10 @@ def signup(data: SignupRequest):
 
 def send_pdf_via_email(to_email: str):
 
+    print("Working dir:", os.getcwd())
+    print("PDF absolute path:", PDF_PATH.resolve())
+    print("PDF exists:", PDF_PATH.exists())
+
     attachment = Attachment(
         filename="handstand.pdf",
         path=str(PDF_PATH)   # 🔥 Das ist wichtig
