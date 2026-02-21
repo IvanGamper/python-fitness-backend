@@ -107,27 +107,27 @@ def signup(data: SignupRequest):
 
 def send_pdf_via_email(to_email: str):
 
-    print("Working dir:", os.getcwd())
-    print("PDF absolute path:", PDF_PATH.resolve())
-    print("PDF exists:", PDF_PATH.exists())
+    with open(PDF_PATH, "rb") as f:
+        pdf_bytes = f.read()
 
-    attachment = Attachment(
-        filename="handstand.pdf",
-        path=str(PDF_PATH)   # 🔥 Das ist wichtig
-    )
+    encoded_pdf = base64.b64encode(pdf_bytes).decode("utf-8")
 
-    response = resend.Emails.send(
-        {
-            "from": "onboarding@pythonfitness.de",
-            "to": to_email,
-            "subject": "Dein Handstand Guide von Python Fitness",
-            "html": """
-                <p>Hallo,</p>
-                <p>Hier ist dein Handstand Guide.</p>
-                <p>Viel Spaß beim Training!</p>
-            """,
-            "attachments": [attachment],
-        }
-    )
+    response = resend.Emails.send({
+        "from": "onboarding@pythonfitness.de",
+        "to": to_email,
+        "subject": "Dein Handstand Guide von Python Fitness",
+        "html": """
+            <p>Hallo,</p>
+            <p>Hier ist dein Handstand Guide.</p>
+            <p>Viel Spaß beim Training!</p>
+        """,
+        "attachments": [
+            {
+                "filename": "handstand.pdf",
+                "content": encoded_pdf,
+                "encoding": "base64"   # 🔥 DAS ist der fehlende Punkt
+            }
+        ]
+    })
 
     print("Resend Response:", response)
