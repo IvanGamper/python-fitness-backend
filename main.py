@@ -2,19 +2,19 @@ from fastapi import HTTPException
 from fastapi.responses import FileResponse
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+import resend
+import base64
 import requests
 import os
-import smtplib
-from email.message import EmailMessage
+
 import json
 from pathlib import Path
 from pydantic import BaseModel, EmailStr
 from datetime import datetime, timedelta
 
-
-EMAIL_USER = os.getenv("EMAIL_USER")
-EMAIL_PASS = os.getenv("EMAIL_PASS")
+resend.api_key = os.getenv("RESEND_API_KEY")
+if not resend.api_key:
+    raise RuntimeError("RESEND_API_KEY nicht gesetzt")
 
 app = FastAPI()
 
@@ -106,28 +106,28 @@ def signup(data: SignupRequest):
     }
 
 def send_pdf_via_email(to_email: str):
-
-    if not EMAIL_USER or not EMAIL_PASS:
-        raise RuntimeError("EMAIL_USER und EMAIL_PASS müssen gesetzt sein.")
-
-    msg = EmailMessage()
-    msg["Subject"] = "Dein PDF"
-    msg["From"] = EMAIL_USER
-    msg["To"] = to_email
-    msg.set_content("Hier ist dein PDF. Viel Spaß damit!")
-
     with open(PDF_PATH, "rb") as f:
-        pdf_data = f.read()
+        pdf_bytes = f.read()
 
-    msg.add_attachment(
-        pdf_data,
-        maintype="application",
-        subtype="pdf",
-        filename="handstand.pdf")
+    encoded_pdf = base64.b64encode(pdf_bytes).decode()
 
+    response = resend.Emails.send({
+        "from": "onboarding@pythonfitness.de",
+        "to": to_email,
+        "subject": "Dein Handstand Guide von Python Fitness",
+        "html": """
+            <p>Hallo,</p>
+            <p>vielen Dank für dein Interesse an unserem Handstand Guide! Im Anhang findest du das PDF mit allen wichtigen Informationen und Übungen, um deinen Handstand zu meistern.</p>
+            <p>Viel Spaß beim Training!</p>
+            <p>Dein Python Fitness Team</p>
+        """,
+        "attachments": [
+            {
+                "filename": "handstand_guide.pdf",
+                "content": encoded_pdf,
+                "type": "application/pdf"
+            }
+        ]
+    })
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-
-        smtp.login(EMAIL_USER, EMAIL_PASS)
-
-        smtp.send_message(msg)
+    print("Resend Response:", response)
