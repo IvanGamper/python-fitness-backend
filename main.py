@@ -6,7 +6,7 @@ import resend
 import base64
 import requests
 import os
-
+from resend import Attachment
 import json
 from pathlib import Path
 from pydantic import BaseModel, EmailStr
@@ -107,22 +107,23 @@ def signup(data: SignupRequest):
 
 def send_pdf_via_email(to_email: str):
 
-    response = resend.Emails.send({
-        "from": "onboarding@pythonfitness.de",
-        "to": to_email,
-        "subject": "Dein Handstand Guide von Python Fitness",
-        "html": """
-            <p>Hallo,</p>
-            <p>vielen Dank für dein Interesse an unserem Handstand Guide! Im Anhang findest du das PDF mit allen wichtigen Informationen und Übungen, um deinen Handstand zu meistern.</p>
-            <p>Viel Spaß beim Training!</p>
-            <p>Dein Python Fitness Team</p>
-        """,
-        "attachments": [
-            {
-                "filename": "handstand.pdf",
-                "pyth": str(PDF_PATH)
-            }
-        ]
-    })
+    attachment = Attachment(
+        filename="handstand.pdf",
+        path=str(PDF_PATH)   # 🔥 Das ist wichtig
+    )
+
+    response = resend.Emails.send(
+        {
+            "from": "onboarding@pythonfitness.de",
+            "to": to_email,
+            "subject": "Dein Handstand Guide von Python Fitness",
+            "html": """
+                <p>Hallo,</p>
+                <p>Hier ist dein Handstand Guide.</p>
+                <p>Viel Spaß beim Training!</p>
+            """,
+            "attachments": [attachment],
+        }
+    )
 
     print("Resend Response:", response)
