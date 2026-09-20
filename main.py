@@ -21,7 +21,9 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://pythonfitness.de",
-                   "https://www.pythonfitness.de"],
+                   "https://www.pythonfitness.de",
+                   "http://localhost:5500",
+                   "http://127.0.0.1:5500"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
