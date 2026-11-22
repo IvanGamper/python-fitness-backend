@@ -1,0 +1,39 @@
+{
+  "flexibility": [
+    {"name": "90/90-Hüftwechsel", "hinweis": "Setz dich aufrecht hin und lass die Knie langsam von einer Seite zur anderen sinken."},
+    {"name": "Hüftbeuger-Dehnung im Halbkniestand", "hinweis": "Richte das Becken auf und lass die Arme locker."},
+    {"name": "Beinrückseite im Sitzen dehnen", "hinweis": "Streck ein Bein aus und neige dich aus der Hüfte leicht nach vorne."},
+    {"name": "Wadendehnung im Schrittstand", "hinweis": "Lass die hintere Ferse am Boden und beuge das vordere Knie leicht."},
+    {"name": "Seitliche Gewichtsverlagerung im breiten Stand", "hinweis": "Wechsle langsam die Seite und beuge jeweils ein Knie."},
+    {"name": "Schmetterlingssitz", "hinweis": "Bring die Fußsohlen zusammen und lass die Knie locker sinken."},
+    {"name": "Hüftdehnung im Sitzen (Figure Four)", "equipment": "stuhl", "hinweis": "Leg einen Knöchel aufs andere Knie und neige dich bei Bedarf leicht vor."},
+    {"name": "Schulterkreise im Stand", "schulter": true, "hinweis": "Kreise langsam mit den Schultern, die Arme bleiben locker."},
+    {"name": "Brustwirbelsäulen-Rotation in Seitenlage", "schulter": true, "hinweis": "Führe den oberen Arm langsam zur Gegenseite und zurück."}
+  ],
+  "metcon": [
+    {"name": "Zügig auf der Stelle marschieren", "hinweis": "Heb die Füße im gleichmäßigen Rhythmus an."},
+    {"name": "Seitliche Schritte", "hinweis": "Geh abwechselnd zwei Schritte nach links und rechts."},
+    {"name": "Kniebeuge mit Wadenheben", "hinweis": "Komm aus der Kniebeuge hoch und heb dann kurz die Fersen."},
+    {"name": "Rückwärts-Taps", "hinweis": "Tipp mit einem Fuß hinter dir auf den Boden und wechsle die Seite."},
+    {"name": "Vorwärts- und Rückwärtsschritte", "hinweis": "Geh zwei kleine Schritte vor und zwei zurück."},
+    {"name": "Seitliche Schritte mit Miniband", "equipment": "band", "hinweis": "Leg das Band über die Knie und halte die Schritte klein."},
+    {"name": "Aufstehen und Hinsetzen", "equipment": "stuhl", "hinweis": "Steh kontrolliert auf und setz dich wieder ab."},
+    {"name": "Radfahren im Wechseltempo", "equipment": "rad", "hinweis": "Tritt zügig und stell den Widerstand so ein, dass das Tempo kontrolliert bleibt."},
+    {"name": "Step Jacks mit Armheben", "schulter": true, "hinweis": "Setz einen Fuß seitlich auf und heb dabei die Arme kontrolliert an."},
+    {"name": "Kettlebell-Kreuzheben", "equipment": "kettlebell", "schulter": true, "hinweis": "Nutze ein leichtes Gewicht und arbeite in ruhigem Rhythmus."}
+  ],
+  "pump": [
+    {"name": "Kniebeugen", "hinweis": "Geh so tief, wie du die Bewegung kontrollieren kannst."},
+    {"name": "Glute Bridge", "hinweis": "Leg dich auf den Rücken, lass die Arme locker und heb das Becken kontrolliert an."},
+    {"name": "Wadenheben im Stand", "hinweis": "Heb die Fersen langsam und senk sie kontrolliert ab."},
+    {"name": "Rückwärts-Ausfallschritte", "hinweis": "Geh abwechselnd mit einem Bein nach hinten."},
+    {"name": "Hüftbeuge im Stand", "hinweis": "Schieb die Hüfte bei leicht gebeugten Knien nach hinten und richte dich wieder auf."},
+    {"name": "Seitliche Schritte mit Miniband", "equipment": "band", "hinweis": "Leg das Band knapp über die Knie und halte Spannung über beide Schritt­richtungen."},
+    {"name": "Aufstehen und Hinsetzen", "equipment": "stuhl", "hinweis": "Nutz einen stabilen Stuhl und senk dich langsam ab."},
+    {"name": "Liegestütz an der Wand", "schulter": true, "hinweis": "Führe die Bewegung langsam und mit angenehmem Abstand zur Wand aus."},
+    {"name": "Kurzhantel-Rudern", "equipment": "hanteln", "schulter": true, "hinweis": "Zieh die Ellenbogen kontrolliert nach hinten."},
+    {"name": "Kurzhantel-Seitheben", "equipment": "hanteln", "schulter": true, "hinweis": "Nutze leichte Gewichte und heb die Arme kontrolliert seitlich an."},
+    {"name": "Goblet Squat", "equipment": "kettlebell", "schulter": true, "hinweis": "Halte die Kettlebell nah am Körper und beweg dich kontrolliert."},
+    {"name": "Rudern am Kabelzug", "equipment": "kabel", "schulter": true, "hinweis": "Zieh die Ellenbogen nach hinten und lass das Gewicht langsam zurück."}
+  ]
+}

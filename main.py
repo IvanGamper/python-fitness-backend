@@ -9,8 +9,9 @@ import os
 from resend import Attachment
 import json
 from pathlib import Path
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime, timedelta
+from typing import Literal
 
 resend.api_key = os.getenv("RESEND_API_KEY")
 if not resend.api_key:
@@ -29,6 +30,7 @@ app.add_middleware(
 )
 
 DATA_FILE = Path("exercises.json")
+WORKOUT_EXERCISES_FILE = Path(__file__).with_name("workout_exercises.json")
 LEADS_FILE = Path("leads.json")
 PDF_PATH = Path("files/handstand.pdf")
 
@@ -73,6 +75,30 @@ def add_exercise(exercise: Exercise):
     )
 
     return new_exercise
+
+
+class WorkoutExercise(BaseModel):
+    name: str = Field(min_length=1)
+    hinweis: str = Field(min_length=1)
+    equipment: Literal["hanteln", "band", "kettlebell", "stuhl", "kabel", "rad"] | None = None
+    schulter: bool = False
+
+
+class WorkoutExerciseCatalog(BaseModel):
+    flexibility: list[WorkoutExercise]
+    metcon: list[WorkoutExercise]
+    pump: list[WorkoutExercise]
+
+
+@app.get(
+    "/workout-exercises",
+    response_model=WorkoutExerciseCatalog,
+    response_model_exclude_none=True,
+)
+def get_workout_exercises():
+    return WorkoutExerciseCatalog.model_validate_json(
+        WORKOUT_EXERCISES_FILE.read_text(encoding="utf-8"),
+    )
 
 
 class SignupRequest(BaseModel):
