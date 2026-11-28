@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Aufträge | Python Fitness ERP</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: system-ui, sans-serif;
+            color: #1c2921;
+            background: #f3f6f1;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        .shell {
+            width: min(calc(100% - 2rem), 62rem);
+            margin-inline: auto;
+        }
+
+        .topbar {
+            background: #1e3327;
+            color: #fff;
+        }
+
+        .topbar .shell {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            padding-block: 1rem;
+        }
+
+        .topbar a {
+            color: #e1eddf;
+            font-size: 0.9rem;
+            text-underline-offset: 0.2em;
+        }
+
+        main {
+            padding-block: clamp(1.75rem, 5vw, 3.5rem);
+        }
+
+        h1, h2 {
+            margin: 0;
+            line-height: 1.15;
+        }
+
+        h1 {
+            margin-bottom: 1.5rem;
+            font-size: clamp(2rem, 5vw, 3.25rem);
+            letter-spacing: -0.04em;
+        }
+
+        h2 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .panel {
+            padding: clamp(1rem, 3vw, 1.5rem);
+            margin-bottom: 1rem;
+            border: 1px solid #d6e0d4;
+            border-radius: 0.9rem;
+            background: white;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.35rem;
+            font-size: 0.92rem;
+            font-weight: 650;
+        }
+
+        input, button {
+            min-height: 2.75rem;
+            border-radius: 0.45rem;
+            font: inherit;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.55rem 0.7rem;
+            border: 1px solid #9caf9e;
+            color: inherit;
+            background: white;
+        }
+
+        button {
+            padding: 0.55rem 1.1rem;
+            border: 1px solid #245537;
+            background: #245537;
+            color: white;
+            font-weight: 650;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1a432a;
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
+        :focus-visible {
+            outline: 3px solid #4d805a;
+            outline-offset: 3px;
+        }
+
+        .topbar a:focus-visible {
+            outline-color: #d6ebd5;
+        }
+
+        .import-row, .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: end;
+            gap: 0.75rem 1rem;
+        }
+
+        .field {
+            flex: 1 1 16rem;
+            max-width: 27rem;
+        }
+
+        .toolbar {
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .status {
+            margin: 0;
+            color: #405246;
+            font-size: 0.92rem;
+        }
+
+        #import-status:not(:empty) {
+            margin-top: 0.75rem;
+        }
+
+        [data-tone="success"] {
+            color: #1f6236;
+        }
+
+        [data-tone="error"] {
+            color: #9c2e24;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+            border: 1px solid #d6e0d4;
+            border-radius: 0.6rem;
+        }
+
+        table {
+            width: 100%;
+            min-width: 34rem;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 0.8rem 0.9rem;
+        }
+
+        thead {
+            background: #eaf0e7;
+        }
+
+        th {
+            font-size: 0.88rem;
+        }
+
+        tbody tr + tr {
+            border-top: 1px solid #e3e9e1;
+        }
+
+        tbody td:nth-child(-n+3) {
+            font-family: ui-monospace, monospace;
+            font-size: 0.9rem;
+        }
+
+        tbody td:first-child {
+            font-weight: 700;
+        }
+
+        th:last-child, td:last-child {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        tbody td[colspan] {
+            color: #405246;
+            font: inherit;
+            font-weight: 400;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="shell">
+            <strong>Python Fitness ERP</strong>
+            <a href="/docs">API-Dokumentation</a>
+        </div>
+    </header>
+    <main class="shell">
+        <h1>Aufträge</h1>
+
+        <section class="panel" aria-labelledby="import-title">
+            <h2 id="import-title">Shop-Bestellung übernehmen</h2>
+            <form id="import-form">
+                <div class="import-row">
+                    <div class="field">
+                        <label for="shop-order">Shop-Bestellnummer</label>
+                        <input id="shop-order" type="text" placeholder="z. B. TEST-002" autocomplete="off" required>
+                    </div>
+                    <button id="import-button" type="submit" disabled>Auftrag importieren</button>
+                </div>
+            </form>
+            <p id="import-status" class="status" role="status"></p>
+        </section>
+
+        <section class="panel" aria-label="Auftragsliste">
+            <div class="toolbar">
+                <div class="field">
+                    <label for="search">Aufträge suchen</label>
+                    <input id="search" type="search" placeholder="ERP-Nummer, Shop-Nummer oder SKU">
+                </div>
+                <p id="list-status" class="status" role="status">Aufträge werden geladen…</p>
+            </div>
+            <div class="table-scroll" tabindex="0" role="region" aria-label="Tabelle der ERP-Aufträge">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">ERP-Auftrag</th>
+                            <th scope="col">Shop-Bestellung</th>
+                            <th scope="col">SKU</th>
+                            <th scope="col">Menge</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <script>
+        const search = document.getElementById("search");
+        const listBody = document.getElementById("orders");
+        const listStatus = document.getElementById("list-status");
+        const importForm = document.getElementById("import-form");
+        const shopInput = document.getElementById("shop-order");
+        const importButton = document.getElementById("import-button");
+        const importStatus = document.getElementById("import-status");
+        let orders = [];
+        let loaded = false;
+
+        function showStatus(element, message, tone = "") {
+            element.textContent = message;
+            element.dataset.tone = tone;
+        }
+
+        function renderOrders() {
+            if (!loaded) return;
+
+            const query = search.value.trim().toLowerCase();
+            const matches = orders.filter((order) =>
+                [order.erp_order_id, order.shop_order_id, order.sku].some((value) =>
+                    value.toLowerCase().includes(query)
+                )
+            );
+
+            listBody.replaceChildren();
+            for (const order of matches) {
+                const row = listBody.insertRow();
+                for (const value of [order.erp_order_id, order.shop_order_id, order.sku, order.quantity]) {
+                    row.insertCell().textContent = value;
+                }
+            }
+
+            if (matches.length === 0) {
+                const empty = listBody.insertRow().insertCell();
+                empty.colSpan = 4;
+                empty.textContent = query ? "Keine passenden Aufträge gefunden." : "Noch keine Aufträge importiert.";
+            }
+
+            showStatus(listStatus, matches.length === 1 ? "1 Auftrag" : matches.length + " Aufträge");
+        }
+
+        async function loadOrders() {
+            try {
+                const response = await fetch("/erp/orders");
+                if (!response.ok) throw new Error();
+                orders = await response.json();
+                loaded = true;
+                renderOrders();
+            } catch {
+                showStatus(listStatus, "Auftragsliste konnte nicht geladen werden.", "error");
+            }
+        }
+
+        importForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const shopOrderId = shopInput.value.trim();
+            if (!shopOrderId) {
+                showStatus(importStatus, "Bitte gib eine Shop-Bestellnummer ein.", "error");
+                return;
+            }
+
+            importButton.disabled = true;
+            showStatus(importStatus, "Bestellung wird geprüft…");
+            try {
+                const response = await fetch(
+                    "/erp/orders/import/" + encodeURIComponent(shopOrderId),
+                    { method: "POST" },
+                );
+                const order = await response.json();
+                if (!response.ok) {
+                    showStatus(importStatus, order.detail || "Import fehlgeschlagen.", "error");
+                    return;
+                }
+
+                const message = response.status === 201
+                    ? order.erp_order_id + " wurde importiert."
+                    : order.erp_order_id + " ist bereits im ERP.";
+                showStatus(importStatus, message, "success");
+                importForm.reset();
+                search.value = "";
+                await loadOrders();
+            } catch {
+                showStatus(importStatus, "Import fehlgeschlagen. Prüfe die Verbindung zur ERP-API.", "error");
+            } finally {
+                importButton.disabled = false;
+            }
+        });
+
+        search.addEventListener("input", renderOrders);
+        loadOrders().finally(() => {
+            importButton.disabled = false;
+        });
+    </script>
+</body>
+</html>
