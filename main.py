@@ -12,12 +12,15 @@ from pathlib import Path
 from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime, timedelta
 from typing import Literal
+from request_logging import add_request_logging
+from shop_catalog import DEMO_CATALOG, ShopCatalog
 
 resend.api_key = os.getenv("RESEND_API_KEY")
 if not resend.api_key:
     raise RuntimeError("RESEND_API_KEY nicht gesetzt")
 
 app = FastAPI()
+add_request_logging(app, service="products", path_prefix="/api/v1/products")
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,6 +41,12 @@ PDF_PATH = Path("files/handstand.pdf")
 @app.get("/")
 def root():
     return {"status": "Python Fitness Backend läufttttt"}
+
+
+@app.get("/api/v1/products", tags=["Shop-Demo"])
+def get_shop_products() -> ShopCatalog:
+    return DEMO_CATALOG
+
 
 class Exercise(BaseModel):
     title: str

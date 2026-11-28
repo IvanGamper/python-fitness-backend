@@ -1,0 +1,8 @@
+*
+!Dockerfile
+!requirements.txt
+!request_logging.py
+!main.py
+!shop_catalog.py
+!workout_exercises.json
+!orders_uebung.py
