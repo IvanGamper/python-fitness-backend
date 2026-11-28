@@ -6,12 +6,19 @@ from urllib.request import Request as ClientRequest
 from urllib.request import urlopen
 
 from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, ValidationError
 
 from request_logging import REQUEST_ID_HEADER, add_request_logging
 
 app = FastAPI()
 add_request_logging(app, service="orders", path_prefix="/orders")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5500", "http://127.0.0.1:5500"],
+    allow_methods=["POST"],
+    allow_headers=["Content-Type", REQUEST_ID_HEADER],
+)
 ORDERS_DB = Path(
     os.getenv("ORDERS_DB_PATH") or Path(__file__).with_name("orders_demo.sqlite3")
 ).resolve()

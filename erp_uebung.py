@@ -8,6 +8,7 @@ from urllib.request import Request as ClientRequest
 from urllib.request import urlopen
 
 from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field, ValidationError
 
@@ -35,6 +36,12 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(title="Python Fitness ERP-Demo", lifespan=lifespan)
 add_request_logging(app, service="erp", path_prefix="/erp/orders")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5500", "http://127.0.0.1:5500"],
+    allow_methods=["POST"],
+    allow_headers=["Content-Type", REQUEST_ID_HEADER],
+)
 
 
 class ShopOrder(BaseModel):

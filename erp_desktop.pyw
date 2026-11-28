@@ -5,22 +5,15 @@ import subprocess
 import time
 from pathlib import Path
 from tempfile import gettempdir
+from tkinter import TclError
 from urllib.request import urlopen
+
+from erp_window import open_erp_window
 
 PROJECT_DIR = Path(__file__).resolve().parent
 PYTHON = PROJECT_DIR / ".venv" / "Scripts" / "python.exe"
 APP_DIR = Path(os.getenv("LOCALAPPDATA") or gettempdir()) / "PythonFitnessERP"
-ERP_URL = "http://127.0.0.1:8002/"
-
-
-def find_chrome() -> Path:
-    for variable in ("ProgramFiles", "ProgramFiles(x86)", "LOCALAPPDATA"):
-        folder = os.getenv(variable)
-        if folder:
-            chrome = Path(folder) / "Google" / "Chrome" / "Application" / "chrome.exe"
-            if chrome.is_file():
-                return chrome
-    raise RuntimeError("Google Chrome wurde auf diesem PC nicht gefunden.")
+ERP_URL = "http://127.0.0.1:8002"
 
 
 def api_ready(port: int, expected_route: str) -> bool:
@@ -72,7 +65,6 @@ def start_api(module: str, port: int, expected_route: str) -> subprocess.Popen |
 
 
 def main() -> None:
-    chrome = find_chrome()
     if not PYTHON.is_file():
         raise RuntimeError(f"Die Python-Umgebung fehlt.\n\nErwartet: {PYTHON}")
 
@@ -86,14 +78,8 @@ def main() -> None:
             if process is not None:
                 started.append(process)
 
-        APP_DIR.mkdir(parents=True, exist_ok=True)
-        subprocess.Popen([
-            str(chrome),
-            f"--app={ERP_URL}",
-            f"--user-data-dir={APP_DIR / 'Browser'}",
-            "--no-first-run",
-        ])
-    except (OSError, RuntimeError):
+        open_erp_window(ERP_URL)
+    except (OSError, RuntimeError, TclError):
         for process in reversed(started):
             if process.poll() is None:
                 process.terminate()
@@ -103,6 +89,6 @@ def main() -> None:
 if __name__ == "__main__":
     try:
         main()
-    except (OSError, RuntimeError) as error:
+    except (OSError, RuntimeError, TclError) as error:
         ctypes.windll.user32.MessageBoxW(None, str(error), "Python Fitness ERP", 0x10)
         raise SystemExit(1)
